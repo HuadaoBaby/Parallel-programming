@@ -60,7 +60,7 @@ void test(double* A, double* B, double* C, int n){
 
 #ifdef LINUX
 void test(double* A, double* B, double* C, int n){
-    timeval start, end;
+    struct timeval start, end;
     gettimeofday(&start, 0);
     matrix_multiple(A, B, C, n);
     gettimeofday(&end, 0);
