@@ -16,7 +16,7 @@ void test(double* A, double* B, double* C, int n);
 void get_matrix(double* A, double* B, int n);
 
 void matrix_multiple(double* A, double* B, double* C, int n){
-    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, n, n, n, 1, A, n, B, n, 0, C, n);
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, n, n, n, 1, A, n, B, n, 1, C, n);
 }
 
 void show_matrix(double* C, int n){
