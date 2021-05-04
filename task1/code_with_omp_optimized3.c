@@ -34,7 +34,7 @@ void matrix_multiple(double* A, double* B, double* C, int n){
         for(int i = 0; i < n; i += BLOCKSIZE){
             #pragma omp parallel for
             for(int k = 0; k < n; k += BLOCKSIZE){
-                do_block(A + i * n + k, B + k * n + j, C + i * n + j, n);
+                block_multiple(A + i * n + k, B + k * n + j, C + i * n + j, n);
             }
         }
     }
@@ -59,7 +59,7 @@ void get_matrix(double* A, double* B, int n){
 #ifdef WIN
 void test(double* A, double* B, double* C, int n){
     clock_t start = clock();
-    dgemm_block(A, B, C, n);
+    matrix_multiple(A, B, C, n);
     clock_t end = clock();
     clock_t time = (end - start) / CLOCKS_PER_SEC;
     printf("The size of matric is %d x %d\n", n, n);
@@ -73,7 +73,7 @@ void test(double* A, double* B, double* C, int n){
 void test(double* A, double* B, double* C, int n){
     struct timeval start, end;
     gettimeofday(&start, 0);
-    dgemm_block(A, B, C, n);
+    matrix_multiple(A, B, C, n);
     gettimeofday(&end, 0);
     double time = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
     time /= 1000;
