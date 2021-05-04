@@ -1,7 +1,9 @@
+//两个for循环的并行处理
+
 #include <stdio.h>
 #include <stdlib.h>
+#include "omp.h"
 
-#define BLOCKSIZE 20
 #define WIN
 
 #ifdef WIN
@@ -11,31 +13,20 @@
 #endif
 
 void matrix_multiple(double* A, double* B, double* C, int n);
-void block_multiple(double *A, double *B, double *C, int n);
 void show_matrix(double* C, int n);
 void test(double* A, double* B, double* C, int n);
 void get_matrix(double* A, double* B, int n);
 
-void block_multiple(double *A, double *B, double *C, int n){
-    for(int i = 0; i < BLOCKSIZE; i++){
-        for(int j = 0; j < BLOCKSIZE; j++){
-            double sum = C[i*n+j];
-            for(int k = 0; k < BLOCKSIZE; k++ )
-                sum += A[i * n + k] * B[k * n + j];
-            C[i * n + j] = sum;
-        }
-    }
-}
-
 void matrix_multiple(double* A, double* B, double* C, int n){
     #pragma omp parallel for
-    for(int j = 0; j < n; j += BLOCKSIZE){
+    for(int row = 0; row < n; row++){
         #pragma omp parallel for
-        for(int i = 0; i < n; i += BLOCKSIZE){
-            #pragma omp parallel for
-            for(int k = 0; k < n; k += BLOCKSIZE){
-                block_multiple(A + i * n + k, B + k * n + j, C + i * n + j, n);
+        for(int col = 0; col < n; col++){
+            double sum = 0.0;
+            for(int i = 0; i < n; i++){
+                sum += A[row * n + i] * B[i * n + col];
             }
+            C[row * n + col] = sum;
         }
     }
 }

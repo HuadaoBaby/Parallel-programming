@@ -1,3 +1,5 @@
+//一个for循环的并行处理
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "omp.h"
@@ -16,7 +18,6 @@ void test(double* A, double* B, double* C, int n);
 void get_matrix(double* A, double* B, int n);
 
 void matrix_multiple(double* A, double* B, double* C, int n){
-    #pragma omp parallel for
     for(int row = 0; row < n; row++){
         #pragma omp parallel for
         for(int col = 0; col < n; col++){

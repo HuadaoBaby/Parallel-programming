@@ -1,3 +1,5 @@
+//串行代码
+
 #include <stdio.h>
 #include <stdlib.h>
 

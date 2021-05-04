@@ -1,7 +1,8 @@
-//串行代码改变运行次序
+//一个for循环的并行处理
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "omp.h"
 
 #define WIN
 
@@ -17,8 +18,9 @@ void test(double* A, double* B, double* C, int n);
 void get_matrix(double* A, double* B, int n);
 
 void matrix_multiple(double* A, double* B, double* C, int n){
-    for(int col = 0; col < n; col++){
-        for(int row = 0; row < n; row++){
+    #pragma omp parallel for
+    for(int row = 0; row < n; row++){
+        for(int col = 0; col < n; col++){
             double sum = 0.0;
             for(int i = 0; i < n; i++){
                 sum += A[row * n + i] * B[i * n + col];
