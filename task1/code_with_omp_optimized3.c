@@ -10,13 +10,13 @@
 #include <sys/time.h>
 #endif
 
-void dgemm_block(double* A, double* B, double* C, int n);
-void do_block(double *A, double *B, double *C, int n);
+void matrix_multiple(double* A, double* B, double* C, int n);
+void block_multiple(double *A, double *B, double *C, int n);
 void show_matrix(double* C, int n);
 void test(double* A, double* B, double* C, int n);
 void get_matrix(double* A, double* B, int n);
 
-void do_block(double *A, double *B, double *C, int n){
+void block_multiple(double *A, double *B, double *C, int n){
     for(int i = 0; i < BLOCKSIZE; i++){
         for(int j = 0; j < BLOCKSIZE; j++){
             double sum = C[i*n+j];
@@ -27,7 +27,7 @@ void do_block(double *A, double *B, double *C, int n){
     }
 }
 
-void dgemm_block(double* A, double* B, double* C, int n){
+void matrix_multiple(double* A, double* B, double* C, int n){
     #pragma omp parallel for
     for(int j = 0; j < n; j += BLOCKSIZE){
         #pragma omp parallel for
