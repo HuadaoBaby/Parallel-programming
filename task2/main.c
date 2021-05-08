@@ -12,6 +12,9 @@
 #include <sys/time.h>
 #endif
 
+void quicksort(int *array, int start, int end);
+int partition(int *array, int start, int end);
+void swap(int *a, int *b);
 void quicksort(int* A, int start, int end);
 void quicksort_omp(int* A, int start, int end);
 void mergesort(int* A, int* temp, int start, int end);
@@ -47,50 +50,44 @@ void get_vector(int* A, int n, int mode){
     printf("Create vector, successfully, mode is %d\n", mode);
 }
 
-void quicksort(int* A, int start, int end){
-    if(start >= end) return;
-    int partition = A[start];
-    int i = start, j = end;
-    while(i < j){
-        while(i < j && A[j] >= partition) j--;
-        if(i < j){
-            A[i] = A[j];
-            i++;
-        }
-        while(i < j && A[j] < partition) i++;
-        if(i < j){
-            A[j] = A[i];
-            j--;
-        }
-    }
-    A[i] = partition;
-    quicksort(A, start, i-1);
-    quicksort(A, i+1, end);
+void swap(int *a, int *b){
+    int temp = *b;
+    *b = *a;
+    *a = temp;
 }
 
-void quicksort_omp(int* A, int start, int end){
-    if(start >= end) return;
-    int partition = A[start];
-    int i = start, j = end;
-    while(i < j){
-        while(i < j && A[j] >= partition) j--;
-        if(i < j){
-            A[i] = A[j];
+int partition(int *array, int start, int end){
+    int pivot = array[end];
+    int i = start;
+    for(int j = start; j <= end; j++){
+        if(array[j] < pivot){
+            swap(&array[i], &array[j]);
             i++;
         }
-        while(i < j && A[j] < partition) i++;
-        if(i < j){
-            A[j] = A[i];
-            j--;
-        }
     }
-    A[i] = partition;
-    #pragma omp sections
-    {
-        #pragma omp section{
-        quicksort_omp(A, start, i-1);
-        #pragma omp section{
-        quicksort_omp(A, i+1, end);
+    swap(&array[i], &array[end]);
+    return i;
+}
+
+void quicksort(int *array, int start, int end){
+    if (start >= end) return;
+    int index = partition(array, start, end);
+    quicksort(array, start, index - 1);
+    quicksort(array, index + 1, end);
+}
+
+void quicksort_omp(int *array, int start, int end){
+    if (start >= end) return;
+    int index = partition(array, start, end);
+    if (end - start < 1500){
+        quicksort_omp(array, start, index - 1);
+        quicksort_omp(array, index + 1, end);
+    }
+    else{
+        #pragma omp task
+        quicksort_omp(array, start, index - 1);
+        #pragma omp task
+        quicksort_omp(array, index + 1, end);
     }
 }
 
