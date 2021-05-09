@@ -8,6 +8,7 @@
 
 #include "omp.h"
 
+int cmp(const void *a,const void *b);
 void my_sort(int* array, int n);
 void my_sort_omp(int* array, int n);
 void quicksort_omp(int *array, int start, int end);
@@ -19,6 +20,10 @@ void mergesort_omp(int* A, int* temp, int start, int end);
 void show_vector(int* A, int n);
 void test(int* A, int n);
 void get_vector(int* A, int n, int mode);
+
+int cmp(const void *a,const void *b){
+    return *((int*)a)-*((int*)b);
+}
 
 void show_vector(int* A, int n){
     for(int i = 0; i < n; i++){
@@ -205,6 +210,14 @@ void test(int*A, int n){
 
     memcpy(array ,A, sizeof(int) * n);
     gettimeofday(&start, 0);
+    qsort(array, n, sizeof(int), cmp);
+    gettimeofday(&end, 0);
+    double time0 = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
+    time0 /= 1000;
+    printf("The qsort time is %f\n", time0);
+
+    memcpy(array ,A, sizeof(int) * n);
+    gettimeofday(&start, 0);
     quicksort(array, 0, n-1);
     gettimeofday(&end, 0);
     double time1 = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
@@ -254,7 +267,7 @@ void test(int*A, int n){
     free(temp);
 
     FILE *file = fopen("./time.txt", "a");
-    fprintf(file, "%f,%f,%f,%f,%f\n", time1, time2, time3, time4,time5);
+    fprintf(file, "%f,%f,%f,%f,%f,%f,%f\n", time0, time1, time2, time3, time4, time5, time6);
     fclose(file);
 }
 
