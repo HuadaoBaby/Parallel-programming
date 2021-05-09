@@ -34,23 +34,23 @@ void show_vector(int* A, int n){
 void get_vector(int* A, int n, int mode){
     srand(time(NULL));
     if(mode == 0){
-        A[0] = rand();
+        A[0] = rand()%10;
         for(int i = 1; i < n; i++){
-            A[i] = rand()%n + A[i - 1];
+            A[i] = rand()%10 + A[i - 1];
         }
     }
     else if(mode == 1){
+        A[0] = rand()%10;
         for(int i = 0; i < n; i++){
-            A[i] = rand()%n + A[i - 1];
+            A[i] = A[i - 1] - rand()%10;
         }
     }
     else{
-        A[0] = rand();
         for(int i = 1; i < n; i++){
-            A[i] = rand()%n - A[i - 1];
+            A[i] = rand()%n;
         }
     }
-    printf("Create vector, successfully, mode is %d\n", mode);
+    printf("Create vector successfully, mode is %d\n", mode);
 }
 
 void swap(int *a, int *b){
@@ -82,7 +82,26 @@ void quicksort(int *array, int start, int end){
 void quicksort_omp(int *array, int start, int end){
     if (start >= end) return;
     int index = partition(array, start, end);
-    #pragma omp parallel sections shared(array)
+    // if(end - start < 1500){
+    //     quicksort_omp(array, start, index - 1);
+    //     quicksort_omp(array, index + 1, end);
+    // }
+    // else{
+    //     #pragma omp parallel sections
+    //     {
+    //         #pragma omp section
+    //         {
+    //             quicksort_omp(array, start, index - 1);
+    //             //printf("running 1\n");
+    //         }
+    //         #pragma omp section
+    //         {
+    //             //printf("running 2\n");
+    //             quicksort_omp(array, index + 1, end);
+    //         }
+    //     }
+    // }
+    #pragma omp parallel sections
     {
         #pragma omp section
         {
@@ -208,7 +227,7 @@ void test(int*A, int n){
     printf("The size of vector is %d\n", n);
     struct timeval start, end;
 
-    memcpy(array ,A, sizeof(int) * n);
+    memcpy(array, A, sizeof(int) * n);
     gettimeofday(&start, 0);
     qsort(array, n, sizeof(int), cmp);
     gettimeofday(&end, 0);
@@ -216,7 +235,7 @@ void test(int*A, int n){
     time0 /= 1000;
     printf("The qsort time is %f\n", time0);
 
-    memcpy(array ,A, sizeof(int) * n);
+    memcpy(array, A, sizeof(int) * n);
     gettimeofday(&start, 0);
     quicksort(array, 0, n-1);
     gettimeofday(&end, 0);
@@ -224,7 +243,7 @@ void test(int*A, int n){
     time1 /= 1000;
     printf("The quicksort time is %f\n", time1);
 
-    memcpy(array ,A, sizeof(int) * n);
+    memcpy(array, A, sizeof(int) * n);
     gettimeofday(&start, 0);
     quicksort_omp(array, 0, n-1);
     gettimeofday(&end, 0);
@@ -232,7 +251,7 @@ void test(int*A, int n){
     time2 /= 1000;
     printf("The quicksort_omp time is %f\n", time2);
 
-    memcpy(array ,A, sizeof(int) * n);
+    memcpy(array, A, sizeof(int) * n);
     gettimeofday(&start, 0);
     mergesort(array, temp, 0, n-1);
     gettimeofday(&end, 0);
@@ -240,7 +259,7 @@ void test(int*A, int n){
     time3 /= 1000;
     printf("The mergesort time is %f\n", time3);
 
-    memcpy(array ,A, sizeof(int) * n);
+    memcpy(array, A, sizeof(int) * n);
     gettimeofday(&start, 0);
     mergesort_omp(array, temp, 0, n-1);
     gettimeofday(&end, 0);
@@ -248,21 +267,21 @@ void test(int*A, int n){
     time4 /= 1000;
     printf("The mergesort_omp time is %f\n", time4);
 
-    memcpy(array ,A, sizeof(int) * n);
+    memcpy(array, A, sizeof(int) * n);
     gettimeofday(&start, 0);
-    my_sort(array, n);
+    //my_sort(array, n);
     gettimeofday(&end, 0);
     double time5 = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
-    time4 /= 1000;
-    printf("The my_sort time is %f\n", time5);
+    time5 /= 1000;
+    //printf("The my_sort time is %f\n", time5);
 
-    memcpy(array ,A, sizeof(int) * n);
+    memcpy(array, A, sizeof(int) * n);
     gettimeofday(&start, 0);
-    my_sort_omp(array, n);
+    //my_sort_omp(array, n);
     gettimeofday(&end, 0);
     double time6 = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
-    time4 /= 1000;
-    printf("The my_sort_omp time is %f\n", time6);
+    time6 /= 1000;
+    //printf("The my_sort_omp time is %f\n", time6);
 
     free(temp);
 
@@ -276,10 +295,10 @@ int main(){
         int* A = (int*)malloc(sizeof(int) * n);
         get_vector(A, n, 0);
         test(A, n);
-        get_vector(A, n, 1);
-        test(A, n);
-        get_vector(A, n, 2);
-        test(A, n);
+        // get_vector(A, n, 1);
+        // test(A, n);
+        // get_vector(A, n, 2);
+        // test(A, n);
     }
     return 0;
 }
